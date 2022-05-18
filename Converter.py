@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 
 class Converter:
     def __init__(self):
@@ -7,6 +8,9 @@ class Converter:
         root.geometry("270x85")
         root.title("Convertisseur")
         root.resizable(False, False)
+
+        # Delegate error handeling
+        root.report_callback_exception = self.showError
         
         # Initializing variables
         euros = tk.StringVar(root, value=0)
@@ -35,6 +39,7 @@ class Converter:
 
         # Event bindings for enter event on entries and spinbox
         rate_spinbox.configure(command=lambda: self.setTaux(self.rate))
+        rate_spinbox.bind('<Return>', lambda event: self.setTaux(self.rate))
         euros_entry.bind("<Return>", lambda event: self.toDollars(self.euros))
         dollars_entry.bind("<Return>", lambda event: self.toEuros(self.dollars))
 
@@ -48,6 +53,12 @@ class Converter:
 
         root.mainloop()
     
+    def showError(self, cls, err, traceback):
+        error_name = cls.__name__
+        error_message = str(err)
+
+        messagebox.showerror(error_name, f"{error_name}: {error_message}")
+
     @property
     def dollars(self):
         return float(self.__dollars.get())
