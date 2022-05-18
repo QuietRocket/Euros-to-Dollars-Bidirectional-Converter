@@ -54,7 +54,7 @@ class Converter:
     
     @dollars.setter
     def dollars(self, value):
-        self.__dollars.set(value)
+        self.__dollars.set(f"{value:.2f}")
         
     @property
     def euros(self):
@@ -62,7 +62,7 @@ class Converter:
     
     @euros.setter
     def euros(self, value):
-        self.__euros.set(value)
+        self.__euros.set(f"{value:.2f}")
 
     @property
     def rate(self):
@@ -72,16 +72,29 @@ class Converter:
     def rate(self, value):
         self.__rate.set(value)
 
+    @property
+    def direction(self):
+        # =>, true, euros to dollars
+        # <=, false, dollars to euros
+        return self.__direction.get() == "=>"
+    
+    @direction.setter
+    def direction(self, value):
+        self.__direction.set("=>" if value else "<=")
+
     def toDollars(self, s: float) -> None:
-        self.__direction.set("=>")
+        self.direction = True
         self.dollars = s * self.rate
 
     def toEuros(self, s: float) -> None:
-        self.__direction.set("<=")
+        self.direction = False
         self.euros = s / self.rate
 
     def setTaux(self, s: float) -> None:
-        self.rate = s
+        if self.direction: # Euros to dollars
+            self.dollars = self.euros * s
+        else: # Dollars to euros
+            self.euros = self.dollars / s
 
     def quit(self):
         self.__root.quit()
